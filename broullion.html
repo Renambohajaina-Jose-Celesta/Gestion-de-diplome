@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+
+
+
+
+
+  <div id="page-inner">
+    <div class="row">
+      <div class="col-md-12">
+        <h1 class="page-head-line">Report
+
+        </h1>
+
+      </div>
+    </div>
+
+
+
+
+
+
+    <div class="row" style="margin-bottom:20px;">
+      <div class="col-md-12">
+        <fieldset class="scheduler-border">
+          <legend class="scheduler-border">Search:</legend>
+          <form class="form-inline" role="form" id="searchform">
+            <div class="form-group">
+              <label for="email">Name</label>
+              <input type="text" class="form-control ui-autocomplete-input" id="student" name="student"
+                autocomplete="off"><span role="status" aria-live="polite" class="ui-helper-hidden-accessible"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="email"> Date Of Joining </label>
+              <input type="text" class="form-control hasDatepicker" id="doj" name="doj">
+            </div>
+
+            <div class="form-group">
+              <label for="email"> Branch </label>
+              <select class="form-control" id="branch" name="branch">
+                <option value="">Select Branch</option>
+
+                Warning: Undefined variable $branch in C:\xampp\htdocs\School Fees Payment Sys
+                PHP\School_Fees_System\report.php on line 83
+                <option value="5">Birmingham</option>
+                Warning: Undefined variable $branch in C:\xampp\htdocs\School Fees Payment Sys
+                PHP\School_Fees_System\report.php on line 83
+                <option value="2">Bristol Bedminster</option>
+                Warning: Undefined variable $branch in C:\xampp\htdocs\School Fees Payment Sys
+                PHP\School_Fees_System\report.php on line 83
+                <option value="6">dsds</option>
+                Warning: Undefined variable $branch in C:\xampp\htdocs\School Fees Payment Sys
+                PHP\School_Fees_System\report.php on line 83
+                <option value="3">Kingswood School</option>
+                Warning: Undefined variable $branch in C:\xampp\htdocs\School Fees Payment Sys
+                PHP\School_Fees_System\report.php on line 83
+                <option value="4">Marion Cross School</option>
+                Warning: Undefined variable $branch in C:\xampp\htdocs\School Fees Payment Sys
+                PHP\School_Fees_System\report.php on line 83
+                <option value="1">Swindon Branch</option>
+              </select>
+            </div>
+
+            <button type="button" class="btn btn-success btn-sm" id="find"> Find </button>
+            <button type="reset" class="btn btn-danger btn-sm" id="clear"> Clear </button>
+          </form>
+        </fieldset>
+
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      $(document).ready(function () {
+
+        /*
+        $('#doj').datepicker( {
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: false,
+                dateFormat: 'mm/yy',
+                onClose: function(dateText, inst) { 
+                    $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
+                }
+            });
+          1353c-p function 18cp 
+        */
+
+        /******************/
+        $("#doj").datepicker({
+
+          changeMonth: true,
+          changeYear: true,
+          showButtonPanel: true,
+          dateFormat: 'mm/yy',
+          onClose: function (dateText, inst) {
+            var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+            var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+            $(this).val($.datepicker.formatDate('MM yy', new Date(year, month, 1)));
+          }
+        });
+
+        $("#doj").focus(function () {
+          $(".ui-datepicker-calendar").hide();
+          $("#ui-datepicker-div").position({
+            my: "center top",
+            at: "center bottom",
+            of: $(this)
+          });
+        });
+
+        /*****************/
+
+        $('#student').autocomplete({
+          source: function (request, response) {
+            $.ajax({
+              url: 'ajx.php',
+              dataType: "json",
+              data: {
+                name_startsWith: request.term,
+                type: 'report'
+              },
+              success: function (data) {
+
+                response($.map(data, function (item) {
+
+                  return {
+                    label: item,
+                    value: item
+                  }
+                }));
+              }
+
+
+
+            });
+          }
+          /*,
+              autoFocus: true,
+              minLength: 0,
+                   select: function( event, ui ) {
+                var abc = ui.item.label.split("-");
+                //alert(abc[0]);
+                 $("#student").val(abc[0]);
+                 return false;
+  
+                },
+                   */
+
+
+
+        });
+
+
+        $('#find').click(function () {
+          mydatatable();
+        });
+
+
+        $('#clear').click(function () {
+
+          $('#searchform')[0].reset();
+          mydatatable();
+        });
+
+        function mydatatable() {
+
+          $("#subjectresult").html('<table class="table table-striped table-bordered table-hover" id="tSortable22"><thead><tr><th>Name/Contact</th><th>Fees</th><th>Balance</th><th>Branch</th><th>DOJ</th><th>Action</th></tr></thead><tbody></tbody></table>');
+
+          $("#tSortable22").dataTable({
+            'sPaginationType': 'full_numbers',
+            "bLengthChange": false,
+            "bFilter": false,
+            "bInfo": false,
+            'bProcessing': true,
+            'bServerSide': true,
+            'sAjaxSource': "datatable.php?" + $('#searchform').serialize() + "&type=report",
+            'aoColumnDefs': [{
+              'bSortable': false,
+              'aTargets': [-1] /* 1st one, start by the right */
+            }]
+          });
+
+
+        }
+
+        ////////////////////////////
+        $("#tSortable22").dataTable({
+
+          'sPaginationType': 'full_numbers',
+          "bLengthChange": false,
+          "bFilter": false,
+          "bInfo": false,
+
+          'bProcessing': true,
+          'bServerSide': true,
+          'sAjaxSource': "datatable.php?type=report",
+
+          'aoColumnDefs': [{
+            'bSortable': false,
+            'aTargets': [-1] /* 1st one, start by the right */
+          }]
+        });
+
+        ///////////////////////////		
+
+
+
+      });
+
+
+      function GetFeeForm(sid) {
+
+        $.ajax({
+          type: 'post',
+          url: 'getfeeform.php',
+          data: { student: sid, req: '2' },
+          success: function (data) {
+            $('#formcontent').html(data);
+            $("#myModal").modal({ backdrop: "static" });
+          }
+        });
+
+
+      }
+
+    </script>
+
+
+
+
+    <style>
+      #doj .ui-datepicker-calendar {
+        display: none;
+      }
+    </style>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Manage Fees
+      </div>
+      <div class="panel-body">
+        <div class="table-sorting table-responsive" id="subjectresult">
+          <div id="tSortable22_wrapper" class="dataTables_wrapper" role="grid">
+            <div id="tSortable22_processing" class="dataTables_processing" style="visibility: hidden;">Processing...
+            </div>
+            <table class="table table-striped table-bordered table-hover dataTable" id="tSortable22">
+              <thead>
+                <tr role="row">
+                  <th class="sorting_asc" role="columnheader" tabindex="0" aria-controls="tSortable22" rowspan="1"
+                    colspan="1" aria-label="Name/Contact: activate to sort column ascending" style="width: 134.5px;">
+                    Name/Contact</th>
+                  <th class="sorting" role="columnheader" tabindex="0" aria-controls="tSortable22" rowspan="1"
+                    colspan="1" aria-label="Fees: activate to sort column ascending" style="width: 51.5px;">Fees</th>
+                  <th class="sorting" role="columnheader" tabindex="0" aria-controls="tSortable22" rowspan="1"
+                    colspan="1" aria-label="Balance: activate to sort column ascending" style="width: 80.5px;">Balance
+                  </th>
+                  <th class="sorting" role="columnheader" tabindex="0" aria-controls="tSortable22" rowspan="1"
+                    colspan="1" aria-label="Branch: activate to sort column ascending" style="width: 73.5px;">Branch
+                  </th>
+                  <th class="sorting" role="columnheader" tabindex="0" aria-controls="tSortable22" rowspan="1"
+                    colspan="1" aria-label="DOJ: activate to sort column ascending" style="width: 46.5px;">DOJ</th>
+                  <th class="sorting_disabled" role="columnheader" rowspan="1" colspan="1" aria-label="Action"
+                    style="width: 66.5px;">Action</th>
+                </tr>
+              </thead>
+
+              <tbody role="alert" aria-live="polite" aria-relevant="all">
+                <tr class="odd">
+                  <td class=" sorting_1">John Doe<br>9874545454</td>
+                  <td class="">2500</td>
+                  <td class="">356</td>
+                  <td class="">Kingswood School</td>
+                  <td class="">13 Apr 17</td>
+                  <td class=""><button class="btn btn-warning btn-xs" onclick="javascript:GetFeeForm(3)"><i
+                        class="fa fa-usd "></i> Fee Detail </button></td>
+                </tr>
+                <tr class="even">
+                  <td class=" sorting_1">Tony Jr<br>7854885214</td>
+                  <td class="">2500</td>
+                  <td class="">2000</td>
+                  <td class="">Kingswood School</td>
+                  <td class="">02 Jul 18</td>
+                  <td class=""><button class="btn btn-warning btn-xs" onclick="javascript:GetFeeForm(4)"><i
+                        class="fa fa-usd "></i> Fee Detail </button></td>
+                </tr>
+                <tr class="odd">
+                  <td class=" sorting_1">Christine<br>5454578965</td>
+                  <td class="">3660</td>
+                  <td class="">2160</td>
+                  <td class="">Swindon Branch</td>
+                  <td class="">02 Jun 18</td>
+                  <td class=""><button class="btn btn-warning btn-xs" onclick="javascript:GetFeeForm(5)"><i
+                        class="fa fa-usd "></i> Fee Detail </button></td>
+                </tr>
+                <tr class="even">
+                  <td class=" sorting_1">Harry Den<br>8467067344</td>
+                  <td class="">4500</td>
+                  <td class="">4300</td>
+                  <td class="">Marion Cross School</td>
+                  <td class="">03 Jul 18</td>
+                  <td class=""><button class="btn btn-warning btn-xs" onclick="javascript:GetFeeForm(6)"><i
+                        class="fa fa-usd "></i> Fee Detail </button></td>
+                </tr>
+                <tr class="odd">
+                  <td class=" sorting_1">Emma Gadot<br>3545458520</td>
+                  <td class="">2200</td>
+                  <td class="">2000</td>
+                  <td class="">Kingswood School</td>
+                  <td class="">02 Mar 18</td>
+                  <td class=""><button class="btn btn-warning btn-xs" onclick="javascript:GetFeeForm(7)"><i
+                        class="fa fa-usd "></i> Fee Detail </button></td>
+                </tr>
+                <tr class="even">
+                  <td class=" sorting_1">Isabella<br>8525874545</td>
+                  <td class="">20000</td>
+                  <td class="">15000</td>
+                  <td class="">Bristol Bedminster</td>
+                  <td class="">03 Jan 17</td>
+                  <td class=""><button class="btn btn-warning btn-xs" onclick="javascript:GetFeeForm(8)"><i
+                        class="fa fa-usd "></i> Fee Detail </button></td>
+                </tr>
+                <tr class="odd">
+                  <td class=" sorting_1">James Wan<br>2565452102</td>
+                  <td class="">6500</td>
+                  <td class="">4000</td>
+                  <td class="">Swindon Branch</td>
+                  <td class="">02 Mar 18</td>
+                  <td class=""><button class="btn btn-warning btn-xs" onclick="javascript:GetFeeForm(9)"><i
+                        class="fa fa-usd "></i> Fee Detail </button></td>
+                </tr>
+                <tr class="even">
+                  <td class=" sorting_1">dfdf<br>112332</td>
+                  <td class="">1212</td>
+                  <td class="">1078</td>
+                  <td class="">Birmingham</td>
+                  <td class="">02 Oct 23</td>
+                  <td class=""><button class="btn btn-warning btn-xs" onclick="javascript:GetFeeForm(10)"><i
+                        class="fa fa-usd "></i> Fee Detail </button></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="dataTables_paginate paging_full_numbers" id="tSortable22_paginate"><a tabindex="0"
+                class="first paginate_button paginate_button_disabled" id="tSortable22_first">First</a><a tabindex="0"
+                class="previous paginate_button paginate_button_disabled" id="tSortable22_previous">Previous</a><span><a
+                  tabindex="0" class="paginate_active">1</a></span><a tabindex="0"
+                class="next paginate_button paginate_button_disabled" id="tSortable22_next">Next</a><a tabindex="0"
+                class="last paginate_button paginate_button_disabled" id="tSortable22_last">Last</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-------->
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog" aria-hidden="true" style="display: none;">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">×</button>
+            <h4 class="modal-title">Fee Report</h4>
+          </div>
+          <div class="modal-body" id="formcontent">
+            <h4>Student Info</h4>
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <tbody>
+                  <tr>
+                    <th>Name</th>
+                    <td>John Doe</td>
+                    <th>Branch</th>
+                    <td>Kingswood School</td>
+                  </tr>
+                  <tr>
+                    <th>Contact</th>
+                    <td>9874545454</td>
+                    <th>Joining Date</th>
+                    <td>13-04-2017</td>
+                  </tr>
+
+
+                </tbody>
+              </table>
+            </div>
+
+            <h4>Fee Info</h4>
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Paid</th>
+                    <th>Remark</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>13-04-2017</td>
+                    <td>900</td>
+                    <td>monthly</td>
+                  </tr>
+                  <tr>
+                    <td>01-04-2018</td>
+                    <td>1000</td>
+                    <td>lklk</td>
+                  </tr>
+                  <tr>
+                    <td>04-10-2023</td>
+                    <td>122</td>
+                    <td>1&amp;é&amp;é&amp;é</td>
+                  </tr>
+                  <tr>
+                    <td>01-10-2023</td>
+                    <td>122</td>
+                    <td>jojojojojo</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <table style="width:150px;">
+              <tbody>
+                <tr>
+                  <th>Total Fees:
+                  </th>
+                  <td>2500
+                  </td>
+                </tr>
+
+                <tr>
+                  <th>Total Paid:
+                  </th>
+                  <td>2144
+                  </td>
+                </tr>
+
+                <tr>
+                  <th>Balance:
+                  </th>
+                  <td>356
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!--------->
+
+
+  </div>
+</body>
+
+</html>

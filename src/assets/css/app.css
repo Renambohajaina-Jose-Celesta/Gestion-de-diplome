@@ -1,0 +1,19 @@
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+/* Styles de base */
+/* purgecss start ignore */
+@import 'tailwindcss/base';
+/* purgecss end ignore */
+
+/* Composants */
+/* purgecss start ignore */
+@import 'tailwindcss/components';
+/* purgecss end ignore */
+
+/* Utilitaires */
+/* purgecss start ignore */
+@import 'tailwindcss/utilities';
+/* purgecss end ignore */
+
+/* Vos styles personnalisés vont ici */
